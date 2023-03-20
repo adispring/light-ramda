@@ -22,10 +22,11 @@
       "web": "https://github.com/megawac"
     }
   ],
-  "name": "ramda",
+  "name": "light-ramda",
   "description": "A practical functional library for JavaScript programmers.",
   "keywords": [
     "ramda",
+    "light-ramda",
     "functional",
     "utils",
     "utilities",
