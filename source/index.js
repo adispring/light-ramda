@@ -1,6 +1,5 @@
 export { default as F } from './F.js';
 export { default as T } from './T.js';
-export { default as __ } from './__.js';
 export { default as add } from './add.js';
 export { default as addIndex } from './addIndex.js';
 export { default as addIndexRight } from './addIndexRight.js';
@@ -72,7 +71,7 @@ export { default as flatten } from './flatten.js';
 export { default as flip } from './flip.js';
 export { default as forEach } from './forEach.js';
 export { default as forEachObjIndexed } from './forEachObjIndexed.js';
-export { default as fromPairs } from  './fromPairs.js';
+export { default as fromPairs } from './fromPairs.js';
 export { default as groupBy } from './groupBy.js';
 export { default as groupWith } from './groupWith.js';
 export { default as gt } from './gt.js';

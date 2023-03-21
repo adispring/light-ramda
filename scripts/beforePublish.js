@@ -6,8 +6,8 @@ var readme_path = path.resolve('./README.md');
 
 var readme_content = fs.readFileSync(readme_path, 'utf8');
 var new_readme_content = readme_content.replace(
-  /((?:libs|npm)\/ramda[\/@])(\d+\.\d+(?:\.\d+)?)/g,
-  function(v, p1, p2) {
+  /((?:libs|npm)\/ramda[/@])(\d+\.\d+(?:\.\d+)?)/g,
+  function (v, p1) {
     return p1 + pkg.version;
   }
 );
@@ -17,8 +17,8 @@ var license_path = path.resolve('./LICENSE.txt');
 
 var license_content = fs.readFileSync(license_path, 'utf8');
 var new_license_content = license_content.replace(
-  /(Copyright\ \(c\)\ 2013-)(\d{4})/g,
-  function(v, p1, p2) {
+  /(Copyright \(c\) 2013-)(\d{4})/g,
+  function (v, p1) {
     return p1 + new Date().getFullYear();
   }
 );

@@ -1,6 +1,5 @@
 import _objectIs from './internal/_objectIs.js';
 
-
 /**
  * Returns true if its arguments are identical, false otherwise. Values are
  * identical if they reference the same memory. `NaN` is identical to `NaN`;
@@ -8,7 +7,6 @@ import _objectIs from './internal/_objectIs.js';
  *
  * Note this is merely a curried version of ES6 `Object.is`.
  *
- * `identical` does not support the `__` placeholder.
  *
  * @func
  * @memberOf R
@@ -28,12 +26,12 @@ import _objectIs from './internal/_objectIs.js';
  *      R.identical(0, -0); //=> false
  *      R.identical(NaN, NaN); //=> true
  */
-var identical = function(a, b) {
+var identical = function (a, b) {
   switch (arguments.length) {
     case 0:
       return identical;
     case 1:
-      return (function() {
+      return (function () {
         return function unaryIdentical(_b) {
           switch (arguments.length) {
             case 0:
@@ -42,7 +40,7 @@ var identical = function(a, b) {
               return _objectIs(a, _b);
           }
         };
-      }());
+      })();
     default:
       return _objectIs(a, b);
   }

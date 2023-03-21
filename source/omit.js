@@ -28,7 +28,7 @@ var omit = _curry2(function omit(names, obj) {
   }
 
   for (var prop in obj) {
-    if (!index.hasOwnProperty(prop)) {
+    if (!Object.prototype.hasOwnProperty.call(index, prop)) {
       result[prop] = obj[prop];
     }
   }

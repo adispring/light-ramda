@@ -1,7 +1,6 @@
 import _curry2 from './internal/_curry2.js';
 import mergeDeepWithKey from './mergeDeepWithKey.js';
 
-
 /**
  * Creates a new object with the own properties of the first object merged with
  * the own properties of the second object. If a key exists in both objects:
@@ -24,8 +23,12 @@ import mergeDeepWithKey from './mergeDeepWithKey.js';
  *      //=> { name: 'fred', age: 10, contact: { email: 'moo@example.com' }}
  */
 var mergeDeepLeft = _curry2(function mergeDeepLeft(lObj, rObj) {
-  return mergeDeepWithKey(function(k, lVal, rVal) {
-    return lVal;
-  }, lObj, rObj);
+  return mergeDeepWithKey(
+    function (k, lVal) {
+      return lVal;
+    },
+    lObj,
+    rObj
+  );
 });
 export default mergeDeepLeft;

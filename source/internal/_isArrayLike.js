@@ -2,7 +2,6 @@ import _curry1 from './_curry1.js';
 import _isArray from './_isArray.js';
 import _isString from './_isString.js';
 
-
 /**
  * Tests whether or not an object is similar to an array.
  *
@@ -22,13 +21,26 @@ import _isString from './_isString.js';
  *      _isArrayLike({nodeType: 1, length: 1}) // => false
  */
 var _isArrayLike = _curry1(function isArrayLike(x) {
-  if (_isArray(x)) { return true; }
-  if (!x) { return false; }
-  if (typeof x !== 'object') { return false; }
-  if (_isString(x)) { return false; }
-  if (x.length === 0) { return true; }
+  if (_isArray(x)) {
+    return true;
+  }
+  if (!x) {
+    return false;
+  }
+  if (typeof x !== 'object') {
+    return false;
+  }
+  if (_isString(x)) {
+    return false;
+  }
+  if (x.length === 0) {
+    return true;
+  }
   if (x.length > 0) {
-    return x.hasOwnProperty(0) && x.hasOwnProperty(x.length - 1);
+    return (
+      Object.prototype.hasOwnProperty.call(x, 0) &&
+      Object.prototype.hasOwnProperty.call(x, x.length - 1)
+    );
   }
   return false;
 });

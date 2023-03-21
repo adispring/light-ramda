@@ -1,8 +1,6 @@
 import _includes from './_includes.js';
 
-
 function _Set() {
-  /* globals Set */
   this._nativeSet = typeof Set === 'function' ? new Set() : null;
   this._items = {};
 }
@@ -11,7 +9,7 @@ function _Set() {
 // @param item The item to add to the Set
 // @returns {boolean} true if the item did not exist prior, otherwise false
 //
-_Set.prototype.add = function(item) {
+_Set.prototype.add = function (item) {
   return !hasOrAdd(item, true, this);
 };
 
@@ -19,7 +17,7 @@ _Set.prototype.add = function(item) {
 // @param item The item to check for existence in the Set
 // @returns {boolean} true if the item exists in the Set, otherwise false
 //
-_Set.prototype.has = function(item) {
+_Set.prototype.has = function (item) {
   return hasOrAdd(item, false, this);
 };
 

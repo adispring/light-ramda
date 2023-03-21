@@ -8,57 +8,88 @@ var ofArray = R.of(Array);
 var ofEither = R.of(S.Either);
 var ofMaybe = R.of(S.Maybe);
 
-
-describe('traverse', function() {
-
-  it('operates on a list of lists', function() {
+describe('traverse', function () {
+  it('operates on a list of lists', function () {
     eq(R.traverse(ofArray, R.map(R.add(10)), []), [[]]);
     eq(R.traverse(ofArray, R.map(R.add(10)), [[], [1, 2, 3, 4]]), []);
-    eq(R.traverse(ofArray, R.map(R.add(10)), [[1], [2, 3, 4]]), [[11, 12], [11, 13], [11, 14]]);
-    eq(R.traverse(ofArray, R.map(R.add(10)), [[1, 2], [3, 4]]), [[11, 13], [11, 14], [12, 13], [12, 14]]);
-    eq(R.traverse(ofArray, R.map(R.add(10)), [[1, 2, 3], [4]]), [[11, 14], [12, 14], [13, 14]]);
+    eq(R.traverse(ofArray, R.map(R.add(10)), [[1], [2, 3, 4]]), [
+      [11, 12],
+      [11, 13],
+      [11, 14],
+    ]);
+    eq(
+      R.traverse(ofArray, R.map(R.add(10)), [
+        [1, 2],
+        [3, 4],
+      ]),
+      [
+        [11, 13],
+        [11, 14],
+        [12, 13],
+        [12, 14],
+      ]
+    );
+    eq(R.traverse(ofArray, R.map(R.add(10)), [[1, 2, 3], [4]]), [
+      [11, 14],
+      [12, 14],
+      [13, 14],
+    ]);
     eq(R.traverse(ofArray, R.map(R.add(10)), [[1, 2, 3, 4], []]), []);
   });
 
-  it('operates on a list of applicatives', function() {
-    eq(R.traverse(ofMaybe, R.map(R.add(10)), [S.Just(3), S.Just(4), S.Just(5)]), S.Just([13, 14, 15]));
+  it('operates on a list of applicatives', function () {
+    eq(
+      R.traverse(ofMaybe, R.map(R.add(10)), [S.Just(3), S.Just(4), S.Just(5)]),
+      S.Just([13, 14, 15])
+    );
     eq(R.traverse(ofMaybe, R.map(R.add(10)), [S.Just(3), S.Nothing(), S.Just(5)]), S.Nothing());
   });
 
-  it('traverses left to right', function() {
+  it('traverses left to right', function () {
     eq(R.traverse(ofEither, R.identity, [S.Right(1), S.Right(2)]), S.Right([1, 2]));
     eq(R.traverse(ofEither, R.identity, [S.Right(1), S.Left('XXX')]), S.Left('XXX'));
     eq(R.traverse(ofEither, R.identity, [S.Left('XXX'), S.Right(1)]), S.Left('XXX'));
     eq(R.traverse(ofEither, R.identity, [S.Left('XXX'), S.Left('YYY')]), S.Left('XXX'));
   });
 
-  it('dispatches to `traverse` method', function() {
-    const mockTraversable = { traverse(_1, _2) { return 'traverse called'; } };
+  it('dispatches to `traverse` method', function () {
+    const mockTraversable = {
+      traverse(_1, _2) {
+        return 'traverse called';
+      },
+    };
 
     eq(R.traverse(Id, R.identity, mockTraversable), 'traverse called');
   });
 
-  it('dispatches to `fantasy-land/traverse` method', function() {
+  it('dispatches to `fantasy-land/traverse` method', function () {
     const mockTraversable2 = {
-      ['fantasy-land/traverse'](_1, _2) { return 'fantasy-land/traverse called'; }
+      ['fantasy-land/traverse'](_1, _2) {
+        return 'fantasy-land/traverse called';
+      },
     };
     eq(R.traverse(Id, R.identity, mockTraversable2), 'fantasy-land/traverse called');
   });
 
-  it('dispatches to `fantasy-land/traverse` method when it and `traverse` exist', function() {
+  it('dispatches to `fantasy-land/traverse` method when it and `traverse` exist', function () {
     const mockTraversable3 = {
-      traverse(_1, _2) { return 'traverse called'; },
-      ['fantasy-land/traverse'](_1, _2) { return 'fantasy-land/traverse called'; }
+      traverse(_1, _2) {
+        return 'traverse called';
+      },
+      ['fantasy-land/traverse'](_1, _2) {
+        return 'fantasy-land/traverse called';
+      },
     };
     eq(R.traverse(Id, R.identity, mockTraversable3), 'fantasy-land/traverse called');
   });
 
-  it('dispatches to `traverse` when it exists and `fantasy-land/traverse` is not a function', function() {
+  it('dispatches to `traverse` when it exists and `fantasy-land/traverse` is not a function', function () {
     const mockTraversable4 = {
-      traverse(_1, _2) { return 'traverse called'; },
-      'fantasy-land/traverse': new Error()
+      traverse(_1, _2) {
+        return 'traverse called';
+      },
+      'fantasy-land/traverse': new Error(),
     };
     eq(R.traverse(Id, R.identity, mockTraversable4), 'traverse called');
   });
-
 });

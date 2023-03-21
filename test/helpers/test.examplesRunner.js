@@ -12,16 +12,17 @@ function ExampleTest(dox_info, original_source, alias_of) {
   this.testable_source = this.getTestableSource();
 }
 
-ExampleTest.prototype.getFunctionName = function(code) {
+ExampleTest.prototype.getFunctionName = function (code) {
   var func_lines = code.split('\n').slice(0, 2);
   if (func_lines.length === 0) {
     return false;
   }
   var matches;
-  var func_line = (func_lines[0].indexOf('TODO') !== -1 && func_lines.length > 1) ? func_lines[1] : func_lines[0];
+  var func_line =
+    func_lines[0].indexOf('TODO') !== -1 && func_lines.length > 1 ? func_lines[1] : func_lines[0];
   if ((matches = func_line.match(/^function (\w+)/)) !== null) {
     return matches[1];
-  } else if ((matches = func_line.match(/([\w\.]+\s*=\s*)+/)) !== null) {
+  } else if ((matches = func_line.match(/([\w.]+\s*=\s*)+/)) !== null) {
     var names = R.reject(R.isEmpty, R.map(R.trim, matches[0].split('=')));
     return names.length > 0 && (R.find(R.match(/^R\./), names) || names[0]);
   } else {
@@ -30,27 +31,30 @@ ExampleTest.prototype.getFunctionName = function(code) {
 };
 
 // make some minor adjustments to our example source so we can test output
-ExampleTest.prototype.getTestableSource = function() {
+ExampleTest.prototype.getTestableSource = function () {
   if (!this.original_source) {
     return false;
   }
   // convert multiline command + output to single line for testing
-  var testable_source = this.original_source.replace(/^(.*?;.*)$\s*?(\/\/=>.*)$/mg, '$1 $2');
+  var testable_source = this.original_source.replace(/^(.*?;.*)$\s*?(\/\/=>.*)$/gm, '$1 $2');
 
   // convert lines of the form
   // var x = myFunc('something'); //=> 'output'
   // to two test_lines so we can test output
-  testable_source = testable_source.replace(/^\s*(var (\w+).*?;).*?(\/\/=>\s*.*)$/mg, '$1\n$2; $3\n');
+  testable_source = testable_source.replace(
+    /^\s*(var (\w+).*?;).*?(\/\/=>\s*.*)$/gm,
+    '$1\n$2; $3\n'
+  );
 
   // get rid of console.log so we're not printing stuff while running tests
-  testable_source = testable_source.replace(/console\.log\(.*\);/mg, ';');
+  testable_source = testable_source.replace(/console\.log\(.*\);/gm, ';');
 
   var test_lines = R.map(this.getTestLine.bind(this), testable_source.split('\n'));
   return test_lines.join('\n');
 };
 
 // check line for sample output, add to our _tests array
-ExampleTest.prototype.getTestLine = function(line) {
+ExampleTest.prototype.getTestLine = function (line) {
   line = line.trim();
   var matches = line.match(/^(.*);\s*\/\/=>\s*(.+?)(\/\/.+$|$)/);
   if (matches) {
@@ -64,9 +68,10 @@ ExampleTest.prototype.getTestLine = function(line) {
       expected = 'String(NaN)';
     }
     test_info_str += '_tests.push({';
-    test_info_str += 'expression:'   + expression + ',';
-    test_info_str += 'expected:'     + expected + ',';
-    test_info_str += 'description:"(' + expression.replace(/"/g, '\\"') + ' => "+' + expression + '+")"';
+    test_info_str += 'expression:' + expression + ',';
+    test_info_str += 'expected:' + expected + ',';
+    test_info_str +=
+      'description:"(' + expression.replace(/"/g, '\\"') + ' => "+' + expression + '+")"';
     test_info_str += '});';
     return test_info_str;
   } else {
@@ -106,7 +111,9 @@ function processExample(e, idx, all_examples) {
   if (e.testable_source) {
     // we have testable source, run example
     var run_func_name = 'runExample_' + e.func_name.replace(/\W/g, '_') + '_' + e.line_number;
-    runExample[run_func_name] = function(etmp) { runExample(etmp); };
+    runExample[run_func_name] = function (etmp) {
+      runExample(etmp);
+    };
     runExample[run_func_name](e);
   } else {
     // see if e is alias for function with example
@@ -117,39 +124,38 @@ function processExample(e, idx, all_examples) {
 function runExample(e) {
   var Rtest = requireFromStr(ramda_wrap(example_wrap(e.testable_source)), 'example_tester');
   var test_data = Rtest.example_test();
-  it('compile and test ' + e.func_name + ' examples (' + test_data.length + ')', function() {
+  it('compile and test ' + e.func_name + ' examples (' + test_data.length + ')', function () {
     R.map(assertPairEqual, test_data);
   });
 }
 
 function checkForAliasExample(e) {
-  it(e.func_name + ' has example or is an alias for function that has example', function() {
-  });
+  it(e.func_name + ' has example or is an alias for function that has example', function () {});
 }
 
 // wrap a string
-var wrap = R.curry(function(pre, post, s) {
+var wrap = R.curry(function (pre, post, s) {
   return pre + s + post;
 });
 
 // get the tags we need as a map
 function tagListToMap(targets, list) {
   var map = {};
-  R.forEach(function(x) {
+  R.forEach(function (x) {
     var val_key = targets[x.type];
     map[x.type] = x[val_key];
   }, list);
   return map;
 }
 
-var propIn = R.curry(function(prop_name, prop_vals, object) {
+var propIn = R.curry(function (prop_name, prop_vals, object) {
   return R.any(R.identity, R.ap(R.map(R.propEq(prop_name), prop_vals), [object]));
 });
 
 // create our example objects from dox
 function getExampleFromDox(dox_info) {
   var tags = R.filter(propIn('type', ['example', 'see', 'namespace']), dox_info.tags);
-  var tag_map = tagListToMap({example: 'string', namespace: 'string', see: 'local'}, tags);
+  var tag_map = tagListToMap({ example: 'string', namespace: 'string', see: 'local' }, tags);
   if (tag_map.namespace) {
     // ignore namespaces
     return false;
@@ -170,9 +176,12 @@ var examples = R.filter(R.complement(R.eq(false)), R.mapIndexed(getExampleFromDo
 // prepare our source code to inject examples
 var source_for_compliation = splitAt(ramda_source, '/* TEST_ENTRY_POINT */');
 var ramda_wrap = wrap(source_for_compliation[0], source_for_compliation[1]);
-var example_wrap = wrap('R.example_test = function(){\nvar _tests = [];\n', '\nreturn _tests;\n};\n');
+var example_wrap = wrap(
+  'R.example_test = function(){\nvar _tests = [];\n',
+  '\nreturn _tests;\n};\n'
+);
 
 // process examples
-describe('example tests', function() {
+describe('example tests', function () {
   R.forEachIndexed(processExample, examples);
 });
